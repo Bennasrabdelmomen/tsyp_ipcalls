@@ -3,3 +3,4 @@ tensorflow
 FastApi
 pyarrow
 scikit-learn
+numpy
