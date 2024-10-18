@@ -15,7 +15,7 @@ for attack in attacks:
     if os.path.exists(model_filename):
         model1 = tf.keras.models.load_model(model_filename)  # Load the entire model (architecture + weights)
         print(f"Model {model_filename} loaded successfully")
-        Models.append((model1, attack))  # Store model with attack type for easier reference
+        Models.append((model1, attack))  
     else:
         print(f"Model {model_filename} not found, skipping...")
 
