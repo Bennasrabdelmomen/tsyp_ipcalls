@@ -1,12 +1,11 @@
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, HTTPException
 import tensorflow as tf
 import os
 import pandas as pd
 from data import data_preprocess
 from autoencoder import build_autoencoder, preprocess_anomaly
 import numpy as np
-
-
+from pydantic import BaseModel
 
 app = FastAPI()
 
@@ -19,6 +18,7 @@ for attack in attacks:
     if os.path.exists(model_filename):
         model1 = tf.keras.models.load_model(model_filename)  # Load the entire model (architecture + weights)
         print(f"Model {model_filename} loaded successfully")
+        Models.append((model1, attack))
         Models.append((model1, attack))
     else:
         print(f"Model {model_filename} not found, skipping...")
@@ -71,6 +71,20 @@ async def predict(file: UploadFile = File(...)):
         }
 
     return {"attack_predictions": all_predictions}
+from nlp import cybersecurity_chatbot
+
+class Query(BaseModel):
+    text: str
+
+@app.post("/ask_me")
+async def generate(query: Query):
+    try:
+        cve_results, mitre_results = cybersecurity_chatbot(query.text)
+        return {"cve_results": cve_results, "mitre_results": mitre_results}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 
 
 if __name__ == "__main__":
